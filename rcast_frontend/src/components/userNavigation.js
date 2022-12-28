@@ -60,7 +60,7 @@ const Stack = createStackNavigator();
 
 const Tab = createBottomTabNavigator();
 
-const BottomTabNavigator = () => {
+const BottomTabNavigator = (props) => {
   return (
     <Tab.Navigator 
         screenOptions={({ route }) => ({ 
@@ -83,8 +83,7 @@ const BottomTabNavigator = () => {
         })}>
       <Tab.Screen 
         name="Feed" 
-        component={UserFeed} 
-
+        component={() => <UserFeed rcastUserInfo={props.rcastUserInfo}/>}
       />
       <Tab.Screen name="Shares" component={UserShares} />
     </Tab.Navigator>
@@ -99,7 +98,9 @@ const Drawer = createDrawerNavigator();
 const DrawerNavigator = (props) => {
     return (
       <Drawer.Navigator initialRouteName="RCast">
-        <Drawer.Screen name="RCast" component={BottomTabNavigator} />
+        <Drawer.Screen name="RCast"
+        component={() => <BottomTabNavigator rcastUserInfo={props.rcastUserInfo}
+        />}/>
         <Drawer.Screen name="Profile" 
         component={() => <ProfileScreen logOutUser={props.logOutUser}/>}
         />
@@ -119,6 +120,7 @@ export default function UserNavigation(props) {
         <>
           <DrawerNavigator 
             logOutUser={props.logOutUser}
+            rcastUserInfo={props.rcastUserInfo}
           />
         </>
 

@@ -4,10 +4,11 @@ const morgan = require('morgan')
 require('dotenv').config()
 const sequelize = require('./src/db/db')
 const { DataTypes } = require("sequelize")
-const User = require('./src/models/user')(sequelize, DataTypes)
+const user = require('./src/models/user')(sequelize, DataTypes)
 const passport = require('passport')
 require('./config/passport')
 const session = require('express-session')
+const https = require('https');
 
 const { OAuth2Client } = require('google-auth-library')
 const client = new OAuth2Client(process.env.CLIENT_ID)
@@ -172,6 +173,62 @@ app.get('/api/spotify-credentials', (req, res) => {
     const spotifyCredentials = { clientId, clientSecret, redirectUri };
     res.json(spotifyCredentials);
 });
+
+
+// app.get('/read/tokens', (req,res) => {
+
+
+// })
+
+app.post('/read/user', (req, res) => {
+    console.log("UMMMM")
+    console.log("READING USER")
+    console.log(req.body)
+
+    user.upsert({
+            spotify_id: req.body.spotify_id,
+            display_name: req.body.display_name,
+            email: req.body.email,
+            status: "ACTIVE"
+        }).then((instance) => {
+            console.log("INSTANCE")
+            console.log(instance[0]["dataValues"])
+            const responseUserObject = { ...instance[0]["dataValues"] }
+            const token = jwt.sign(
+                { id: instance[0]["dataValues"]["id"], spotify_id: instance[0]["dataValues"]["spotify_id"] },
+                process.env.TOKEN_KEY,
+                {
+                    // expiresIn: 1,
+                    expiresIn: "9999 years",
+                }
+            )
+            res.json({ user: responseUserObject, rcastToken: token })
+    });
+})
+
+// app.get('/logged', async (req, res) => {
+//     const body = {
+//       grant_type: 'authorization_code',
+//       code: req.query.code,
+//       redirect_uri: process.env.REDIRECTURI,
+//       client_id: process.env.CLIENT_ID,
+//       client_secret: process.env.CLIENT_SECRET,
+//     }
+  
+//     await fetch('https://accounts.spotify.com/api/token', {
+//       method: 'POST',
+//       headers: {
+//         "Content-Type": "application/x-www-form-urlencoded",
+//         "Accept": "application/json"
+//       },
+//       body: encodeFormData(body)
+//     })
+//     .then(response => response.json())
+//     .then(data => {
+//       const query = querystring.stringify(data);
+//       res.redirect(`${process.env.CLIENT_REDIRECTURI}?${query}`);
+//     });
+//   });
 
 
 app.listen(process.env.PORT, async () => {

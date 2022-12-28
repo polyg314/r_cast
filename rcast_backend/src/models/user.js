@@ -2,49 +2,40 @@ const { DataTypes } = require("sequelize")
 const sequelize = require('../db/db');
 
 module.exports = function(sequelize, Sequelize) {
-    const User = sequelize.define('User', {
+    const user = sequelize.define('user', {
         id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
             autoIncrement: true
         },
-        name: {
+        spotify_id: {
             type: DataTypes.STRING,
             allowNull: false,
             unique: false
         },
-        picture: {
+        display_name: {
             type: DataTypes.STRING,
-            allowNull: false,
-            unique: false
+            allowNull: true,
+            unique: true
         },
         email: {
             type: DataTypes.STRING,
-            allowNull: false,
+            allowNull: true,
             unique: true
         },
-        username: {
+        status: {
             type: DataTypes.STRING,
             allowNull: true,
             unique: true
         },
-        tokens: {
-            type: DataTypes.ARRAY(DataTypes.STRING),
-            allowNull: true,
-            unique: false
-        } 
-        // password: {
-        //     type: DataTypes.STRING,
-        //     allowNull: true,
-        //     notEmpty: true,
-        // },
+
     },{
-        timestamps: false,
+        timestamps: true,
         
     })
     // User.prototype.validPassword = function (password) {
     //     return this.password === password
     // }
 
-    return User
+    return user
 }

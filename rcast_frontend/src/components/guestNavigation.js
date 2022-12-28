@@ -10,6 +10,9 @@ export default function GuestNavigation(props) {
           setAccessToken={props.setAccessToken}
           setRefreshToken={props.setRefreshToken}
           setExpirationTime={props.setExpirationTime}
+          setRcastUserInfo={props.setRcastUserInfo}
+          setRcastToken={props.setRcastToken}
+          setLoading={props.setLoading}
         />
 
 

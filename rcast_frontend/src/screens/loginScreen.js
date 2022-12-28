@@ -9,7 +9,7 @@ import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
 
 import {_storeData, _retrieveData} from "../utils/storage"
-
+import getRcastUserInfo from "../API/getRcastUserInfo";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -43,6 +43,19 @@ const getTokens = async (credentials, authorizationCode) => {
     return responseJson
 }
 
+const getUserInfo = async (token) => {
+    const response = await fetch('https://api.spotify.com/v1/me', {
+        method: 'GET',
+        headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+        }
+    });
+    const responseJson = response.json();
+    return responseJson
+}
+
+
 export default function LoginScreen(props) {
 
 
@@ -51,7 +64,11 @@ export default function LoginScreen(props) {
 const [request, response, promptAsync] = useAuthRequest(
     {
         clientId: '2032e93e5d6b4466a81a2fd6152cd0a6',
-        scopes: ['user-read-email', 'playlist-modify-public'],
+        scopes: [
+            'user-modify-playback-state','user-read-currently-playing','user-read-playback-state','user-library-modify',
+            'user-library-read','playlist-read-private','playlist-read-collaborative','playlist-modify-public',
+            'playlist-modify-private','user-read-recently-played','user-top-read', 'user-read-private', 'user-read-email','streaming'
+    ],
         // In order to follow the "Authorization Code Flow" to fetch token after authorizationEndpoint
         // this must be set to false
         usePKCE: false,
@@ -84,7 +101,18 @@ const [request, response, promptAsync] = useAuthRequest(
                     props.setAccessToken(accessToken)
                     props.setRefreshToken(refreshToken)
                     props.setExpirationTime(expirationTime)
-                    setLoading(false)
+                    getUserInfo(accessToken).then(userInfo => {
+                        getRcastUserInfo(userInfo).then(rcastUserInfoRes => {
+                            console.log("RESSSS")
+                            console.log(rcastUserInfoRes)
+                            _storeData('rcastUserInfo', JSON.stringify(rcastUserInfoRes.data.user))
+                            _storeData('rcastToken', rcastUserInfoRes.data.rcastToken)
+                            props.setRcastUserInfo(rcastUserInfoRes.data.user)
+                            props.setRcastToken(rcastUserInfoRes.data.rcastToken)
+                            props.setLoading(false)
+                        })
+                    })
+
             })
         })
 

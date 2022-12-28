@@ -61,6 +61,8 @@ const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const BottomTabNavigator = (props) => {
+    console.log("B PROPS")
+    console.log(props)
   return (
     <Tab.Navigator 
         screenOptions={({ route }) => ({ 
@@ -83,8 +85,10 @@ const BottomTabNavigator = (props) => {
         })}>
       <Tab.Screen 
         name="Feed" 
-        component={() => <UserFeed rcastUserInfo={props.rcastUserInfo}/>}
-      />
+        // component={() => <UserFeed rcastUserInfo={props.rcastUserInfo}/>}
+      >
+              {() => <UserFeed rcastUserInfo={props.rcastUserInfo} />}
+      </Tab.Screen>
       <Tab.Screen name="Shares" component={UserShares} />
     </Tab.Navigator>
   );
@@ -96,14 +100,19 @@ const Drawer = createDrawerNavigator();
 
 
 const DrawerNavigator = (props) => {
+  console.log("DRAW props")
+  console.log(props)
     return (
       <Drawer.Navigator initialRouteName="RCast">
         <Drawer.Screen name="RCast"
-        component={() => <BottomTabNavigator rcastUserInfo={props.rcastUserInfo}
-        />}/>
+        // component={() => <BottomTabNavigator rcastUserInfo={props.rcastUserInfo}/>}
+        >
+          {() => <BottomTabNavigator rcastUserInfo={props.rcastUserInfo} />}
+        </Drawer.Screen>
         <Drawer.Screen name="Profile" 
-        component={() => <ProfileScreen logOutUser={props.logOutUser}/>}
-        />
+        >
+          {() => <ProfileScreen logOutUser={props.logOutUser}/>}
+        </Drawer.Screen>
         <Drawer.Screen name="Friends" component={FriendScreen} />
         <Drawer.Screen name="Add Friend" component={AddFriend} />
       </Drawer.Navigator>

@@ -153,16 +153,11 @@ export default function Main() {
     
                 <>
                 <UserNavigation
+                logOutUser={logOutUser}
                 >
 
                 </UserNavigation>
-                {/* <Button
-                title="Log out"
-                onPress={() => {
-                    logOutUser();
-                }}
-                type="outline"
-                /> */}
+
                 </>
 
             }

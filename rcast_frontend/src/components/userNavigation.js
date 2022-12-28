@@ -96,11 +96,13 @@ const Drawer = createDrawerNavigator();
 
 
 
-const DrawerNavigator = () => {
+const DrawerNavigator = (props) => {
     return (
       <Drawer.Navigator initialRouteName="RCast">
         <Drawer.Screen name="RCast" component={BottomTabNavigator} />
-        <Drawer.Screen name="Profile" component={ProfileScreen} />
+        <Drawer.Screen name="Profile" 
+        component={() => <ProfileScreen logOutUser={props.logOutUser}/>}
+        />
         <Drawer.Screen name="Friends" component={FriendScreen} />
         <Drawer.Screen name="Add Friend" component={AddFriend} />
       </Drawer.Navigator>
@@ -109,13 +111,15 @@ const DrawerNavigator = () => {
 
 
 
-export default function UserNavigation() {
+export default function UserNavigation(props) {
 
 
     return (
 
         <>
-        <DrawerNavigator />
+          <DrawerNavigator 
+            logOutUser={props.logOutUser}
+          />
         </>
 
 

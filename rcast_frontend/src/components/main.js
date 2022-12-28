@@ -97,6 +97,8 @@ export default function Main() {
                                                   console.log("loading?")
                                                   return true
                                             }
+                                        }else{
+                                            setLoading(false)
                                         }
     
         

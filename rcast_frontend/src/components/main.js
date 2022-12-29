@@ -99,6 +99,7 @@ export default function Main() {
                     _retrieveData('expirationTime').then(eTime => {
                         expirationTimeTemp = eTime
                         console.log("hi?")
+                        console.log(refreshTokenTemp)
                         if ((accessTokenTemp !== undefined) && (refreshTokenTemp !== undefined) && (expirationTimeTemp !== undefined) 
                          && (accessTokenTemp !== "undefined") && (refreshTokenTemp !== "undefined")
                             ) {
@@ -155,10 +156,13 @@ export default function Main() {
                                         getRcastUserInfo(userInfo).then(rcastUserInfoRes => {
                                             console.log("RESSSS")
                                             console.log(rcastUserInfoRes)
-                                            _storeData('rcastUserInfo', JSON.stringify(rcastUserInfoRes.data.user))
-                                            _storeData('rcastToken', rcastUserInfoRes.data.rcastToken)
-                                            setRcastUserInfo(rcastUserInfoRes.data.user)
-                                            setRcastToken(rcastUserInfoRes.data.rcastToken)
+                                            if(rcastUserInfoRes !== null){
+                                                _storeData('rcastUserInfo', JSON.stringify(rcastUserInfoRes.data.user))
+                                                _storeData('rcastToken', rcastUserInfoRes.data.rcastToken)
+                                                setRcastUserInfo(rcastUserInfoRes.data.user)
+                                                setRcastToken(rcastUserInfoRes.data.rcastToken)
+                                            }
+
                                             setLoading(false)
                                         })
                                     })

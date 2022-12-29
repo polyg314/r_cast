@@ -27,6 +27,7 @@ import { useNavigation } from '@react-navigation/native';
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack'
+import FriendRequests from '../screens/friendRequests';
 
 
 const Stack = createStackNavigator();
@@ -116,6 +117,7 @@ const DrawerNavigator = (props) => {
           {() => <ProfileScreen logOutUser={props.logOutUser}/>}
         </Drawer.Screen>
         <Drawer.Screen name="Friends" component={FriendScreen} />
+        <Drawer.Screen name="Friend Requests" component={FriendRequests} />
         <Drawer.Screen name="Add Friend" component={AddFriend} />
       </Drawer.Navigator>
     );

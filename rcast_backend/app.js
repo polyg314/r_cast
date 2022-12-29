@@ -12,7 +12,8 @@ const https = require('https');
 
 const { OAuth2Client } = require('google-auth-library')
 const client = new OAuth2Client(process.env.CLIENT_ID)
-
+var SEQUELIZE = require('sequelize');
+var Op = SEQUELIZE.Op;
 var cors=require('cors');
 var jwt = require('jsonwebtoken');
 
@@ -180,30 +181,103 @@ app.get('/api/spotify-credentials', (req, res) => {
 
 // })
 
+
+function UserUpsert(values, condition) {
+    return Model
+        .findOne({ where: condition })
+        .then(function(obj) {
+            // update
+            if(obj)
+                return obj.update(values);
+            // insert
+            return Model.create(values);
+        })
+}
+
 app.post('/read/user', (req, res) => {
     console.log("UMMMM")
     console.log("READING USER")
     console.log(req.body)
 
-    user.upsert({
-            spotify_id: req.body.spotify_id,
-            display_name: req.body.display_name,
-            email: req.body.email,
-            status: "ACTIVE"
-        }).then((instance) => {
-            console.log("INSTANCE")
-            console.log(instance[0]["dataValues"])
-            const responseUserObject = { ...instance[0]["dataValues"] }
-            const token = jwt.sign(
-                { id: instance[0]["dataValues"]["id"], spotify_id: instance[0]["dataValues"]["spotify_id"] },
-                process.env.TOKEN_KEY,
-                {
-                    // expiresIn: 1,
-                    expiresIn: "9999 years",
-                }
-            )
-            res.json({ user: responseUserObject, rcastToken: token })
-    });
+    user.findOne({ where: { spotify_id: req.body.spotify_id} }).then(function(obj){
+        console.log("HHHHHH")
+        console.log(obj)
+        if(obj){
+            console.log("updating...")
+            obj.update({
+                spotify_id: req.body.spotify_id,
+                display_name: req.body.display_name,
+                email: req.body.email,
+                status: "ACTIVE"
+            }).then((instance) => {
+                        console.log("INSTANCE")
+                        console.log(instance["dataValues"])
+                        const responseUserObject = { ...instance["dataValues"] }
+                        const token = jwt.sign(
+                            { id: instance["dataValues"]["id"], spotify_id: instance["dataValues"]["spotify_id"] },
+                            process.env.TOKEN_KEY,
+                            {
+                                // expiresIn: 1,
+                                expiresIn: "9999 years",
+                            }
+                        )
+                        res.json({ user: responseUserObject, rcastToken: token })
+                });
+        }
+
+        else{
+            user.create({
+                spotify_id: req.body.spotify_id,
+                display_name: req.body.display_name,
+                email: req.body.email,
+                status: "ACTIVE"
+            }).then((instance) => {
+                        console.log("INSTANCE")
+                        console.log(instance["dataValues"])
+                        const responseUserObject = { ...instance["dataValues"] }
+                        const token = jwt.sign(
+                            { id: instance["dataValues"]["id"], spotify_id: instance["dataValues"]["spotify_id"] },
+                            process.env.TOKEN_KEY,
+                            {
+                                // expiresIn: 1,
+                                expiresIn: "9999 years",
+                            }
+                        )
+                        res.json({ user: responseUserObject, rcastToken: token })
+                });
+        } 
+        // console.log("RRR USER")
+        // console.log(responseUserObject)
+        // const token = jwt.sign(
+        //     { id: responseUserObject["id"], spotify_id: responseUserObject["spotify_id"] },
+        //     process.env.TOKEN_KEY,
+        //     {
+        //         // expiresIn: 1,
+        //         expiresIn: "9999 years",
+        //     }
+        // )
+        // res.json({ user: responseUserObject, rcastToken: token })
+
+    })
+    // user.upsert({
+    //         spotify_id: req.body.spotify_id,
+    //         display_name: req.body.display_name,
+    //         email: req.body.email,
+    //         status: "ACTIVE"
+    //     }).then((instance) => {
+    //         console.log("INSTANCE")
+    //         console.log(instance[0]["dataValues"])
+    //         const responseUserObject = { ...instance[0]["dataValues"] }
+    //         const token = jwt.sign(
+    //             { id: instance[0]["dataValues"]["id"], spotify_id: instance[0]["dataValues"]["spotify_id"] },
+    //             process.env.TOKEN_KEY,
+    //             {
+    //                 // expiresIn: 1,
+    //                 expiresIn: "9999 years",
+    //             }
+    //         )
+    //         res.json({ user: responseUserObject, rcastToken: token })
+    // });
 })
 
 // app.get('/logged', async (req, res) => {
@@ -229,6 +303,47 @@ app.post('/read/user', (req, res) => {
 //       res.redirect(`${process.env.CLIENT_REDIRECTURI}?${query}`);
 //     });
 //   });
+
+
+
+
+app.get('/search-for-user/:string', (req,res) => {
+    console.log(req.params.string)
+
+    if (req.headers.authorization) {
+            var userInfo = jwt.verify(req.headers.authorization, process.env.TOKEN_KEY)
+            console.log("USER INFO")
+            console.log(userInfo)
+            var searchString = req.params.string.toLocaleLowerCase()
+            console.log(searchString)
+            if(userInfo.hasOwnProperty("id")){
+                console.log("OK GURL")
+                // try{
+                    user.findAll({
+                        where: {
+                            [Op.or]: [
+                                {display_name: { [Op.like]: '%' + searchString + '%' }},
+                                {email: { [Op.like]: '%' + searchString + '%' }},
+                                {spotify_id: { [Op.like]: '%' + searchString + '%' }}
+                            ]
+                        }, 
+                        attributes: ['display_name', 'email','id']
+                      }).then(function(users) {
+                        console.log("USERRS")
+                        console.log(users)
+                        return res.json(users)
+                    });
+                    
+                // }catch(err){
+                //     res.send({data:false, success:false})
+                // }       
+            }
+     
+
+    }
+
+
+})
 
 
 app.listen(process.env.PORT, async () => {

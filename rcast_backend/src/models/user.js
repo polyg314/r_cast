@@ -11,22 +11,22 @@ module.exports = function(sequelize, Sequelize) {
         spotify_id: {
             type: DataTypes.STRING,
             allowNull: false,
-            unique: false
+            unique: true
         },
         display_name: {
             type: DataTypes.STRING,
             allowNull: true,
-            unique: true
+            unique: false
         },
         email: {
             type: DataTypes.STRING,
             allowNull: true,
-            unique: true
+            unique: false
         },
         status: {
             type: DataTypes.STRING,
             allowNull: true,
-            unique: true
+            unique: false
         },
 
     },{

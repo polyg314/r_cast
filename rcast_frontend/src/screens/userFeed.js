@@ -34,7 +34,8 @@ const getDevices = async (token) => {
 const stopStart = async (token) => {
     try {
       let res = await axios({
-          url: 'https://api.spotify.com/v1/me/player/play?device_id=ff8055442cec57895c6a8d5d9d680d3db9a8361f',
+  // ?device_id=5a5861766cabad6f411acdf198f2f9738cdb054c
+          url: 'https://api.spotify.com/v1/me/player/play',
           method: 'PUT',
           timeout: 8000,
           headers: {
@@ -44,7 +45,7 @@ const stopStart = async (token) => {
           data: {
                   "context_uri": "spotify:album:5ht7ItJgpBH7W6vJ5BqpPr",
                   "offset": {
-                    "position": 5
+                    "position": 1
                   },
                   "position_ms": 0
           }
@@ -105,7 +106,7 @@ export default function UserFeed(props) {
   console.log(props)
     return(
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text>USER FEED for {props.rcastUserInfo.spotify_id}</Text>
+        <Text>USER FEED for {props.rcastUserInfo.email}</Text>
         <Button
                 title="Devices"
                 onPress={() => {

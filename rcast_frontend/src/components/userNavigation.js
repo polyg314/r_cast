@@ -87,7 +87,9 @@ const BottomTabNavigator = (props) => {
         name="Feed" 
         // component={() => <UserFeed rcastUserInfo={props.rcastUserInfo}/>}
       >
-              {() => <UserFeed rcastUserInfo={props.rcastUserInfo} />}
+              {() => <UserFeed 
+              rcastUserInfo={props.rcastUserInfo} 
+              />}
       </Tab.Screen>
       <Tab.Screen name="Shares" component={UserShares} />
     </Tab.Navigator>

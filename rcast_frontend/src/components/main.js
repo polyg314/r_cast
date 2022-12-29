@@ -127,7 +127,7 @@ export default function Main() {
                                                     setExpirationTime(expirationTimeTemp)
 
                                                     console.log("loading?")
-                                                    getUserInfo(accessTokenTemp).then(userInfo => {
+                                                    getUserInfo(accessTokenNew).then(userInfo => {
                                                         console.log("UI RES")
                                                         console.log(userInfo)
                                                         getRcastUserInfo(userInfo).then(rcastUserInfoRes => {

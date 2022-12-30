@@ -118,7 +118,9 @@ const DrawerNavigator = (props) => {
         </Drawer.Screen>
         <Drawer.Screen name="Friends" component={FriendScreen} />
         <Drawer.Screen name="Friend Requests" component={FriendRequests} />
-        <Drawer.Screen name="Add Friend" component={AddFriend} />
+        <Drawer.Screen name="Add Friend">
+          {() => <AddFriend rcastUserInfo={props.rcastUserInfo}/>}
+        </Drawer.Screen>
       </Drawer.Navigator>
     );
   }

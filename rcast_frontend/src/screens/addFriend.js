@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { View, Text } from "react-native";
-import { Input, Icon } from '@rneui/themed';
+import { View } from "react-native";
+import { Input } from '@rneui/themed';
 
 import { useIsFocused } from '@react-navigation/native';
 
@@ -8,9 +8,19 @@ import searchForUser  from "../API/searchForUser"
 
 import { _retrieveData } from "../utils/storage";
 
+import {
+   Text,
+   ListItem,
+   Avatar,
+   Icon,
+   Badge,
+   ListItemProps,
+   Button,
+   Switch,
+   lightColors
+   } from '@rneui/themed';
 
-
-export default function AddFriend() {
+export default function AddFriend(props) {
 
    const isFocused = useIsFocused()
 
@@ -27,7 +37,7 @@ export default function AddFriend() {
             searchForUser(ss, token).then(res => {
                console.log("SEACH FRIENDS")
                console.log(res)
-                setSearchFriends(res.data)
+                setSearchFriends(res.data.filter(obj => obj.id !== props.rcastUserInfo.id))
             })
          })
 
@@ -54,6 +64,27 @@ export default function AddFriend() {
          // leftIcon={{ type: 'font-awesome', name: 'comment' }}
          onChangeText={value => handleUpdateFriendSearch(value)}   
    />
+
+
+   {searchFriends.map((person,i) => (
+      <ListItem 
+      key={i}
+      //  onPress={log} 
+      bottomDivider
+      >
+      {/* <Avatar title={l.name} source={{ uri: l.avatar_url }} /> */}
+      <ListItem.Content>
+         <ListItem.Title>{person.display_name}</ListItem.Title>
+         <ListItem.Subtitle>{person.email}</ListItem.Subtitle>
+      </ListItem.Content>
+      <Button
+          title="Add"
+         //  icon={{ name: 'delete', color: 'white' }}
+          buttonStyle={{  }}
+        />
+      {/* <ListItem.Chevron /> */}
+      </ListItem>
+   ))}
    </View>
    );
  }

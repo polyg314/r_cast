@@ -5,6 +5,8 @@ require('dotenv').config()
 const sequelize = require('./src/db/db')
 const { DataTypes } = require("sequelize")
 const user = require('./src/models/user')(sequelize, DataTypes)
+const friendship = require('./src/models/friends')(sequelize, DataTypes)
+const friendRequest = require('./src/models/friendRequests')(sequelize, DataTypes)
 const passport = require('passport')
 require('./config/passport')
 const session = require('express-session')
@@ -343,6 +345,253 @@ app.get('/search-for-user/:string', (req,res) => {
     }
 
 
+})
+
+
+
+app.post("/new-friend-request", (req, res) => {
+    console.log(req.headers.authorization)
+    // console.log(req.body.username)
+    var userInfo = jwt.verify(req.headers.authorization, process.env.TOKEN_KEY)
+    console.log(userInfo)
+    if (req.headers.authorization) {
+
+        try {
+            var userInfo = jwt.verify(req.headers.authorization, process.env.TOKEN_KEY)
+            user.findOne({
+                    where: { id: req.body.userRequested }
+                }).then(user => {
+                    var userID = user.dataValues.id
+                    friendRequest.create({
+                        user_requesting: parseInt(userInfo.id), 
+                        user_requested: parseInt(userID), 
+                        request_status : "ACTIVE"
+                    }).then((request) => {
+                        console.log(request.dataValues)
+                        if (request.dataValues.friend_request_id) {
+                            console.log("POST ID")
+        
+                            res.send({ data : true, success: true})
+                        } else {
+                            res.send({ data: false, success: false })
+                        }
+                    })
+                })
+
+        } catch (err) {
+            res.send({ data: false, success: false })
+        }
+ 
+    }else{
+        res.send({ data: false, success: false })
+    }
+})
+
+
+app.get('/get-all-friend-requests', (req,res) => {
+    user.hasMany(friendRequest, {foreignKey: 'user_requesting'})
+    friendRequest.belongsTo(user, {foreignKey: 'user_requesting'})
+    if (req.headers.authorization) {
+            var userInfo = jwt.verify(req.headers.authorization, process.env.TOKEN_KEY)
+            if(userInfo.hasOwnProperty("id")){
+                console.log("OK GURL")         
+                try{
+                    friendRequest.findAll({
+                        where: {
+                            user_requested: [userInfo.id], 
+                            request_status: "ACTIVE"
+                        }, 
+                        include: [{model: user, attributes: ['display_name', 'email', 'id']}],
+                        attributes: ['friend_request_id']
+
+                      }).then(function(requests) {
+                        console.log(requests)
+                        return res.json({data: requests, success: true})
+                    });
+                    
+                }catch(err){
+                    console.log(err)
+                    res.send({data:false, success:false})
+                }       
+            }
+
+    }
+
+})
+
+
+app.get('/get-all-friends-requested', (req,res) => {
+    user.hasMany(friendRequest, {foreignKey: 'user_requested'})
+    friendRequest.belongsTo(user, {foreignKey: 'user_requested'})
+    if (req.headers.authorization) {
+            var userInfo = jwt.verify(req.headers.authorization, process.env.TOKEN_KEY)
+            if(userInfo.hasOwnProperty("id")){
+                console.log("OK GURL")         
+                try{
+                    friendRequest.findAll({
+                        where: {
+                            user_requesting: [userInfo.id], 
+                            request_status: "ACTIVE"
+                        }, 
+                        include: [{model: user, attributes: ['display_name', 'email', 'id']}],
+                        attributes: ['friend_request_id']
+                      }).then(function(requests) {
+                        console.log(requests)
+                        return res.json({data: requests, success: true})
+                    });
+                    
+                }catch(err){
+                    console.log(err)
+                    res.send({data:false, success:false})
+                }       
+            }
+
+    }
+
+})
+
+
+app.put('/update-friend-request', (req,res) => {
+    if (req.headers.authorization) {
+            var userInfo = jwt.verify(req.headers.authorization, process.env.TOKEN_KEY)
+            if(userInfo.hasOwnProperty("id")){
+                console.log("OK GURL")      
+                try{
+
+                    friendRequest.update({
+                        request_status: req.body.status,
+                    }, { where: { friend_request_id: req.body.friend_request_id}, returning: true }).then((instance) => {
+                        console.log(req.body.status)
+                        if(req.body.status === "ACCEPTED"){
+                            console.log(instance[1][0]['dataValues'])
+                            var userOne = instance[1][0]['dataValues']['user_requesting']
+                            var userTwo = instance[1][0]['dataValues']['user_requested']
+                            console.log("REQ and REQ")
+                            console.log(userOne)
+                            console.log(userTwo)
+                            friendship.create({
+                                user_id_one: parseInt(userOne), 
+                                user_id_two: parseInt(userTwo), 
+                            }).then((friends) => {
+                               
+                                    // console.log(request.dataValues)
+                                    if (friends.dataValues.friendship_id) {
+                                        // console.log("POST ID")
+                    
+                                        res.send({ data : friends.dataValues.friendship_id, success: true})
+                                    } else {
+                                        res.send({ data: false, success: false })
+                                    }
+         
+
+                            })
+                        }else{
+                            // console.log("MAMI")
+                            if (instance[0] > 0) {
+                                res.send({ data: true, success: true})
+                            } else {
+                                res.send({ data: false, success: false })
+                            }
+                        }
+
+                    })
+                }catch(err){
+                    console.log(err)
+                    res.send({data:false, success:false})
+                }  
+
+            }
+     
+
+    }
+
+
+})
+
+                        // where: {
+                        //     [Op.or]: [
+                        //         {user_id_one: [userInfo.id]},
+                        //         {user_id_two: [userInfo.id]}
+                        //     ]
+                        // },
+
+
+
+
+
+
+app.get('/get-all-friends', (req,res) => {
+    user.hasMany(friendship, {foreignKey: 'user_id_two'})
+    friendship.belongsTo(user, {foreignKey: 'user_id_two'})
+    // User.hasMany(Friendship, {foreignKey: 'user_id_one'})
+    // Friendship.belongsTo(User, {foreignKey: 'user_id_one'})
+    if (req.headers.authorization) {
+            var userInfo = jwt.verify(req.headers.authorization, process.env.TOKEN_KEY)
+            if(userInfo.hasOwnProperty("id")){
+                console.log("OK GURL")         
+                try{
+                    user.hasMany(friendship, {foreignKey: 'user_id_two'})
+                    friendship.belongsTo(user, {foreignKey: 'user_id_two'})
+                    friendship.findAll({
+                        where: {
+                            user_id_one: [userInfo.id], 
+                        }, 
+                        include: [{model: user, attributes: ['display_name', 'email', 'id']}],
+                        attributes: ['friendship_id']
+                      }).then(function(friends) {
+                            console.log(friends)
+                            user.hasMany(friendship, {foreignKey: 'user_id_one'})
+                            friendship.belongsTo(user, {foreignKey: 'user_id_one'})
+                            friendship.findAll({
+                                where: {
+                                    user_id_two: [userInfo.id], 
+                                }, 
+                                include: [{model: user, attributes: ['display_name', 'email', 'id']}],
+                                attributes: ['friendship_id']
+                              }).then(function(friends2) {
+                                console.log(friends2)
+                                return res.json({data: friends.concat(friends2), success: true})
+                              })
+
+                    });
+                    
+                }catch(err){
+                    console.log(err)
+                    res.send({data:false, success:false})
+                }       
+            }
+     
+    }
+
+})
+
+
+app.post('/remove-friendship', (req,res) => {
+
+
+    if (req.headers.authorization) {
+            var userInfo = jwt.verify(req.headers.authorization, process.env.TOKEN_KEY)
+            console.log(userInfo)
+            try{    
+                if(userInfo.hasOwnProperty("id")){
+                    console.log("OK GURL BAI")         
+                
+                    friendship.destroy({
+                        where: {
+                           friendship_id: req.body.friendshipId
+                        }
+                    }).then(function(instance) {
+                        return res.json({data: true, success: true})
+
+                    });
+                    
+                }
+            }catch(err){
+                    console.log(err)
+                    res.send({data:false, success:false})
+                }       
+    }
+     
 })
 
 

@@ -130,6 +130,12 @@ const DrawerNavigator = (props) => {
 export default function UserNavigation(props) {
 
 
+  
+  // React.useEffect(() => {
+
+  // }, [])
+
+
     return (
 
         <>

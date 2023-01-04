@@ -326,7 +326,7 @@ app.get('/search-for-user/:string', (req,res) => {
                             [Op.or]: [
                                 {display_name: { [Op.like]: '%' + searchString + '%' }},
                                 {email: { [Op.like]: '%' + searchString + '%' }},
-                                {spotify_id: { [Op.like]: '%' + searchString + '%' }}
+                                // {spotify_id: { [Op.like]: '%' + searchString + '%' }}
                             ]
                         }, 
                         attributes: ['display_name', 'email','id']
@@ -389,6 +389,7 @@ app.post("/new-friend-request", (req, res) => {
 
 
 app.get('/get-all-friend-requests', (req,res) => {
+    console.log(req.headers.authorization)
     user.hasMany(friendRequest, {foreignKey: 'user_requesting'})
     friendRequest.belongsTo(user, {foreignKey: 'user_requesting'})
     if (req.headers.authorization) {
@@ -460,7 +461,7 @@ app.put('/update-friend-request', (req,res) => {
 
                     friendRequest.update({
                         request_status: req.body.status,
-                    }, { where: { friend_request_id: req.body.friend_request_id}, returning: true }).then((instance) => {
+                    }, { where: { friend_request_id: req.body.friendRequestId}, returning: true }).then((instance) => {
                         console.log(req.body.status)
                         if(req.body.status === "ACCEPTED"){
                             console.log(instance[1][0]['dataValues'])
@@ -521,6 +522,7 @@ app.put('/update-friend-request', (req,res) => {
 
 
 app.get('/get-all-friends', (req,res) => {
+    console.log('/get-all-friends')
     user.hasMany(friendship, {foreignKey: 'user_id_two'})
     friendship.belongsTo(user, {foreignKey: 'user_id_two'})
     // User.hasMany(Friendship, {foreignKey: 'user_id_one'})
@@ -528,7 +530,8 @@ app.get('/get-all-friends', (req,res) => {
     if (req.headers.authorization) {
             var userInfo = jwt.verify(req.headers.authorization, process.env.TOKEN_KEY)
             if(userInfo.hasOwnProperty("id")){
-                console.log("OK GURL")         
+                console.log("OK GURL") 
+                console.log(userInfo)        
                 try{
                     user.hasMany(friendship, {foreignKey: 'user_id_two'})
                     friendship.belongsTo(user, {foreignKey: 'user_id_two'})
@@ -539,6 +542,7 @@ app.get('/get-all-friends', (req,res) => {
                         include: [{model: user, attributes: ['display_name', 'email', 'id']}],
                         attributes: ['friendship_id']
                       }).then(function(friends) {
+                            console.log("Friends?")
                             console.log(friends)
                             user.hasMany(friendship, {foreignKey: 'user_id_one'})
                             friendship.belongsTo(user, {foreignKey: 'user_id_one'})

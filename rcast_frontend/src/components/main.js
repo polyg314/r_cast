@@ -202,6 +202,7 @@ export default function Main() {
     React.useEffect(() => {
         console.log("MAIN USE EFFECT BEING CALLED")
         tokenRefreshWorkflow()
+        
     }, [])
 
 

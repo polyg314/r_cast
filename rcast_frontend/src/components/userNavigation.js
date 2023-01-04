@@ -1,7 +1,20 @@
 
 import * as React from 'react';
 
-import { Button, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import {  View, StyleSheet, TouchableOpacity } from 'react-native';
+
+import {
+  Text,
+  ListItem,
+  Avatar,
+  Icon,
+  Badge,
+  ListItemProps,
+  Button,
+  Switch,
+  lightColors
+} from '@rneui/themed';
+
 
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -29,6 +42,10 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack'
 import FriendRequests from '../screens/friendRequests';
 
+import getAllFriendRequests from '../API/friends/getAllFriendRequests';
+import getAllFriends from '../API/friends/getAllFriends';
+
+import { _retrieveData } from "../utils/storage";
 
 const Stack = createStackNavigator();
 // https://dev.to/easybuoy/combining-stack-tab-drawer-navigations-in-react-native-with-react-navigation-5-da
@@ -117,9 +134,45 @@ const DrawerNavigator = (props) => {
           {() => <ProfileScreen logOutUser={props.logOutUser}/>}
         </Drawer.Screen>
         <Drawer.Screen name="Friends" component={FriendScreen} />
-        <Drawer.Screen name="Friend Requests" component={FriendRequests} />
+        <Drawer.Screen name="Friend Requests"
+               options={{
+                title: 'Friend Requests',
+                drawerIcon: ({focused, size}) => (
+<>
+                   <Ionicons
+                      name="md-home"
+                      size={size}
+                      color={focused ? '#7cc' : '#ccc'}
+                   />
+                   {props.yourFriendRequests.length > 0 && 
+                                   <Badge
+                                   status="error"
+                                   value={props.yourFriendRequests.length}
+                                   containerStyle={{ position: 'absolute', top: 12, right: 25 }}
+                                 />
+                   }
+
+                </>
+                ),
+             }}
+        >
+          {() => 
+          <FriendRequests
+            yourFriendRequests={props.yourFriendRequests}
+            handleSetYourFriendRequests={props.handleSetYourFriendRequests}
+            userFriends={props.userFriends}
+            handleSetUserFriends={props.handleSetUserFriends}
+            />
+          }
+        </Drawer.Screen>
         <Drawer.Screen name="Add Friend">
-          {() => <AddFriend rcastUserInfo={props.rcastUserInfo}/>}
+          {() => <AddFriend 
+          rcastUserInfo={props.rcastUserInfo}
+          yourFriendRequests={props.yourFriendRequests}
+          handleSetYourFriendRequests={props.handleSetYourFriendRequests}
+          userFriends={props.userFriends}
+          handleSetUserFriends={props.handleSetUserFriends}
+          />}
         </Drawer.Screen>
       </Drawer.Navigator>
     );
@@ -130,10 +183,31 @@ const DrawerNavigator = (props) => {
 export default function UserNavigation(props) {
 
 
-  
-  // React.useEffect(() => {
+  const [userFriends, setUserFriends] = React.useState([])
+  const [yourFriendRequests, setYourFriendRequests] = React.useState([])
 
-  // }, [])
+  const handleSetUserFriends = (v) => {
+    setUserFriends(v)
+  }
+  const handleSetYourFriendRequests = (v) => {
+    setYourFriendRequests(v)
+  }
+  
+  React.useEffect(() => {
+    console.log("WHYYY")
+    _retrieveData("rcastToken").then(token => {
+      getAllFriendRequests(token).then(res=> {
+
+        setYourFriendRequests(res.data)
+      })
+      getAllFriends(token).then((res) => {
+        console.log("USSEERRR")
+        console.log(res.data)
+        setUserFriends(res.data)
+      })
+    })
+
+  }, [])
 
 
     return (
@@ -142,6 +216,10 @@ export default function UserNavigation(props) {
           <DrawerNavigator 
             logOutUser={props.logOutUser}
             rcastUserInfo={props.rcastUserInfo}
+            yourFriendRequests={yourFriendRequests}
+            handleSetYourFriendRequests={handleSetYourFriendRequests}
+            userFriends={userFriends}
+            handleSetUserFriends={handleSetUserFriends}
           />
         </>
 

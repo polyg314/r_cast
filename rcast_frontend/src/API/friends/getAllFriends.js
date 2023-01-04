@@ -12,6 +12,8 @@ async function getAllFriends(token){
              headers: axiosConfig
          })
          if(res.status === 200){
+            console.log("USER FRIENDS")
+            console.log(res.data)
              return res.data
          }    
          return null

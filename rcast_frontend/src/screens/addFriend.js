@@ -22,7 +22,6 @@ import {
    Switch,
    lightColors
 } from '@rneui/themed';
-import getAllFriends from '../API/friends/getAllFriends';
 
 export default function AddFriend(props) {
 
@@ -31,7 +30,7 @@ export default function AddFriend(props) {
    const [searchString, setSearchString] = React.useState('')
    const [searchFriends, setSearchFriends] = React.useState([])
    const [yourFriendsRequested, setYourFriendsRequested] = React.useState([])
-   const [userFriends, setUserFriends] = React.useState([])
+
 
    const handleUpdateFriendSearch = (ss) => {
       console.log(ss)
@@ -61,9 +60,7 @@ export default function AddFriend(props) {
          getAllFriendsRequested(token).then(res=> {
             setYourFriendsRequested(res.data)
          })
-         getAllFriends(token).then((res) => {
-            setUserFriends(res.data)
-        })
+
       })
 
    }, [isFocused])
@@ -93,8 +90,8 @@ export default function AddFriend(props) {
    console.log("RESsss")
    console.log(yourFriendsRequested)
    console.log("USER FRIENDs")
-   console.log(userFriends)
-   if(userFriends.filter(obj => obj.user.id === person.id).length > 0){
+   console.log(props.userFriends)
+   if(props.userFriends.filter(obj => obj.user.id === person.id).length > 0){
        friends = true
    }
    if(yourFriendsRequested.filter(obj => obj.user.id === person.id).length > 0){

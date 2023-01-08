@@ -521,6 +521,7 @@ app.put('/update-friend-request', (req,res) => {
 
 
 
+                        
 app.get('/get-all-friends', (req,res) => {
     console.log('/get-all-friends')
     user.hasMany(friendship, {foreignKey: 'user_id_two'})

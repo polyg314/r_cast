@@ -11,6 +11,8 @@ import {objectCopy} from "../utils/misc"
 
 import { _retrieveData } from "../utils/storage";
 
+import updateFriendRequest from '../API/friends/updateFriendRequest';
+
 import {
    Text,
    ListItem,
@@ -83,6 +85,28 @@ export default function AddFriend(props) {
 
   }
 
+  const confirmFriendRequest = (friendRequestId) => {
+   console.log("okkkk")
+   console.log(friendRequestId)
+   console.log(props.yourFriendRequests)
+   _retrieveData("rcastToken").then(token => {
+       updateFriendRequest(friendRequestId, "ACCEPTED", token).then(res => {
+           var yourFriendRequestsCopy = objectCopy(props.yourFriendRequests)
+           var yourFriendRequestsCopyFiltered = yourFriendRequestsCopy.filter(obj => obj.friend_request_id !== friendRequestId)
+           props.handleSetYourFriendRequests(yourFriendRequestsCopyFiltered)
+
+           var friendsCopy = objectCopy(props.userFriends)
+           console.log(friendsCopy)
+           friendsCopy.push({
+               user: yourFriendRequestsCopy.filter(obj => obj.friend_request_id=== friendRequestId)[0]["user"], 
+               friendshipId: res.data
+           })
+           props.handleSetUserFriends(friendsCopy)
+           /// FIX  -- Also add to your friends
+       })
+
+   })
+}
 
   const getFriendSearchSecondary = (person) => {
    var friends = false
@@ -91,6 +115,7 @@ export default function AddFriend(props) {
    console.log(yourFriendsRequested)
    console.log("USER FRIENDs")
    console.log(props.userFriends)
+
    if(props.userFriends.filter(obj => obj.user.id === person.id).length > 0){
        friends = true
    }
@@ -106,6 +131,19 @@ export default function AddFriend(props) {
          buttonStyle={{}}
       />
        )
+   }
+   else if(props.yourFriendRequests.filter(obj => obj.user.id === person.id).length > 0){
+      console.log("REQ ALREADY")
+      return(
+
+          <Button
+          title="Confirm"
+          onPress={() => confirmFriendRequest(props.yourFriendRequests.filter(obj => obj.user.id === person.id)[0]["friend_request_id"])}
+         //   disabled={true}
+          //  icon={{ name: 'delete', color: 'white' }}
+          buttonStyle={{}}
+       />
+      )
    }
    else if(requestedAlready){
        console.log("REQ ALREADY")

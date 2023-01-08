@@ -33,7 +33,7 @@ import UserFeed from "../screens/userFeed"
 import UserShares from "../screens/userShares"
 import ProfileScreen from '../screens/profileScreen';
 import AddFriend from '../screens/addFriend';
-import FriendScreen from '../screens/friendsScreen';
+import FriendsScreen from '../screens/friendsScreen';
 
 import { Entypo } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -133,7 +133,16 @@ const DrawerNavigator = (props) => {
         >
           {() => <ProfileScreen logOutUser={props.logOutUser}/>}
         </Drawer.Screen>
-        <Drawer.Screen name="Friends" component={FriendScreen} />
+        <Drawer.Screen name="Friends">
+        {() => 
+            <FriendsScreen
+                yourFriendRequests={props.yourFriendRequests}
+                handleSetYourFriendRequests={props.handleSetYourFriendRequests}
+                userFriends={props.userFriends}
+                handleSetUserFriends={props.handleSetUserFriends}
+            ></FriendsScreen>
+        }
+        </Drawer.Screen>
         <Drawer.Screen name="Friend Requests"
                options={{
                 title: 'Friend Requests',

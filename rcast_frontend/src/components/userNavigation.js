@@ -35,6 +35,8 @@ import ProfileScreen from '../screens/profileScreen';
 import AddFriend from '../screens/addFriend';
 import FriendsScreen from '../screens/friendsScreen';
 
+import Tools from '../screens/tools';
+
 import { Entypo } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
@@ -93,7 +95,10 @@ const BottomTabNavigator = (props) => {
                     : 'ios-information-circle-outline';
                 } else if (route.name === 'Shares') {
                   iconName = focused ? 'ios-list' : 'ios-list-outline';
+                }else if (route.name === 'Tools') {
+                  iconName = focused ? 'ios-list' : 'ios-list-outline';
                 }
+    
     
                 // You can return any component that you like here!
                 return <Ionicons name={iconName} size={size} color={color} />;
@@ -110,6 +115,12 @@ const BottomTabNavigator = (props) => {
               />}
       </Tab.Screen>
       <Tab.Screen name="Shares" component={UserShares} />
+      <Tab.Screen name="Tools">
+      {() => 
+            <Tools
+            ></Tools>
+        }
+      </Tab.Screen>
     </Tab.Navigator>
   );
 };

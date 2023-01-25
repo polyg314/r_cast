@@ -9,3 +9,9 @@ export var axiosConfig = {
     'Content-Type': 'application/json',
     "Authorization": ""
 }; 
+
+export const MAIN_THEME_1 = "purple"
+
+export const MAIN_THEME_2 = "green"
+
+export const MAIN_THEME_3 = "orange"

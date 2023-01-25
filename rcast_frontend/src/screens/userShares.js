@@ -70,6 +70,9 @@ export default function UserShares() {
             var importantInfo = value.split("https://open.spotify.com/")[1].split("/")
             var type = importantInfo[0]
             var id = importantInfo[1]
+            if(id.includes("?")){
+                id = id.split("?")[0]
+            }
             console.log(type)
             console.log(id)
             if (!["track", "album", "playlist", "artist"].includes(type)) {
@@ -124,16 +127,6 @@ export default function UserShares() {
                                 }
                             }
                             console.log(newPostObject)
-                            // {
-                            //     postSourceId: "",
-                            //     postUserComment: "",
-                            //     postType: "",
-                            //     postImage: "",
-                            //     postTitle: "",
-                            //     postArtist: "",
-                            //     postLength: "",
-                            // }
-
                         }
                         else {
                             setErrorText("Invalid share link")

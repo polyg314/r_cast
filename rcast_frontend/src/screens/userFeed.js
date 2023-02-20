@@ -7,7 +7,7 @@ import { Button } from '@rneui/themed';
 import axios from "axios"
 
 import * as React from 'react';
-import { MAIN_THEME_1, MAIN_THEME_2, MAIN_THEME_3} from '../utils/constants';
+import { MAIN_THEME_1, MAIN_THEME_2, MAIN_THEME_3, FONT_FAMILY} from '../utils/constants';
 
 import { Image } from '@rneui/themed';
 import { FlatList, SafeAreaView, StyleSheet, ActivityIndicator } from 'react-native';
@@ -226,10 +226,17 @@ export default function UserFeed(props) {
                    />
 
                 </View>
-                <View style={{ width: "calc(100% - 90px)", backgroundColor: MAIN_THEME_2, float: "left", display: "inline-block",  height: "60px" }}>
-                  
-                  </View>
-                  <View style={{ width: "30px", backgroundColor: MAIN_THEME_3, float: "left", display: "inline-block",  height: "60px"  }}>
+                <View style={{ width: "calc(100% - 90px)", backgroundColor: MAIN_THEME_2, float: "left", display: "inline-block",  height: "60px" , position: "relative"}}>
+                    <p style={{margin: "2px 0px 1px 0px", padding: "2px", fontSize: "9px", fontFamily: FONT_FAMILY, maxHeight: "18px", textOverflow: "elipsis", overflow: "hidden"}}>
+                      <b>{postItem.postType.toUpperCase()}: {postItem.postTitle}</b>
+                      </p>
+                    <p style={{margin: "0px", padding: "2px", fontSize: "8px", fontFamily: FONT_FAMILY,maxHeight: "18px", textOverflow: "elipsis", overflow: "hidden"}}>Artists: {postItem.postArtist}</p>
+
+                    <p style={{margin: "0px", padding: "0px", fontSize: "8px", position: "absolute", bottom: 3, left: 2, height: "16px", fontFamily: FONT_FAMILY, maxHeight: "10px", width: "calc(66% - 10px)", float: "left"}}>Posted by: Polyg_wat_it_is_mmk</p>
+                    <p style={{margin: "0px", padding: "0px", fontSize: "8px",  position: "absolute", bottom: 3, right: 2, height: "16px", fontFamily: FONT_FAMILY, maxHeight: "10px", width: "calc(33% - 10px)", float: "left"}}>Length: {postItem.postLength}</p>
+
+                </View>
+                <View style={{ width: "30px", backgroundColor: MAIN_THEME_3, float: "left", display: "inline-block",  height: "60px"  }}>
                  
                 </View>
               </View>

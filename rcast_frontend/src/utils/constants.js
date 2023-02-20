@@ -12,6 +12,8 @@ export var axiosConfig = {
 
 export const MAIN_THEME_1 = "purple"
 
-export const MAIN_THEME_2 = "green"
+export const MAIN_THEME_2 = "#fff6fb"
 
 export const MAIN_THEME_3 = "orange"
+
+export const FONT_FAMILY = "Arial"

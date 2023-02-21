@@ -2,7 +2,7 @@ const { DataTypes } = require("sequelize")
 const sequelize = require('../db/db');
 
 module.exports = function(sequelize, Sequelize) {
-    const Post = sequelize.define('Post', {
+    const post = sequelize.define('post', {
         postId: {
             type: DataTypes.INTEGER,
             primaryKey: true,
@@ -56,5 +56,5 @@ module.exports = function(sequelize, Sequelize) {
     //     return this.password === password
     // }
 
-    return Post
+    return post
 }

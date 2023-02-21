@@ -227,6 +227,7 @@ export default function Main() {
                 <UserNavigation
                     logOutUser={logOutUser}
                     rcastUserInfo={rcastUserInfo}
+                    rcastToken={rcastToken}
                 >
                 </UserNavigation>
 

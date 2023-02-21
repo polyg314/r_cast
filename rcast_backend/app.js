@@ -7,6 +7,7 @@ const { DataTypes } = require("sequelize")
 const user = require('./src/models/user')(sequelize, DataTypes)
 const friendship = require('./src/models/friends')(sequelize, DataTypes)
 const friendRequest = require('./src/models/friendRequests')(sequelize, DataTypes)
+const post = require('./src/models/post')(sequelize, DataTypes)
 const passport = require('passport')
 require('./config/passport')
 const session = require('express-session')
@@ -597,6 +598,53 @@ app.post('/remove-friendship', (req,res) => {
                 }       
     }
      
+})
+
+
+
+
+app.post("/create-new-post", (req, res) => {
+    // console.log(req.headers.authorization)
+    // console.log(req.body.username)
+    if (req.headers.authorization) {
+        var userInfo = jwt.verify(req.headers.authorization, process.env.TOKEN_KEY)
+        console.log(userInfo)
+        try{    
+            if(userInfo.hasOwnProperty("id")){
+                console.log("OK GURL GO OFF")
+                console.log(req.body)         
+                post.create({
+                    userId: parseInt(userInfo.id), 
+                    postSource: req.body.postSource, 
+                    postSourceId: req.body.postSourceId, 
+                    postUserComment: req.body.postUserComment, 
+                    postTitle: req.body.postTitle, 
+                    postType: req.body.postType,
+                    postImage: req.body.postImage,
+                    postArtist: req.body.postArtist,
+                    postLength: req.body.postLength
+                }).then((postId) => {
+                    console.log("CCC res")
+                    console.log(postId)
+                    if (postId.dataValues.postId) {
+                        console.log("POST ID")
+                        console.log(postId.dataValues.postId)
+    
+                        res.send({ data : {postId: postId.dataValues.postId }})
+                    } else {
+                        res.send({ data: false })
+                    }
+                })
+            }else{
+                res.send({ data: false })
+            }
+                
+            
+        }  catch(err){
+            console.log(err)
+            res.send({data:false, success:false})
+        }    
+    }
 })
 
 
